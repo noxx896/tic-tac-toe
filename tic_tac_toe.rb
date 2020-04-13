@@ -92,10 +92,10 @@ class Board
             end
         }
         #possible solutions to win
-        if aux == [0, 1, 2] || aux == [3, 4, 5] ||
-            aux == [6, 7, 8] || aux == [0, 3, 6] ||
-            aux == [1, 4, 7] || aux == [2, 5, 8] ||
-            aux == [0, 4, 8] || aux == [2, 4, 6]
+        if (aux & [0, 1, 2]).size > 2 || (aux & [3, 4, 5]).size > 2 ||
+            (aux & [6, 7, 8]).size > 2 || (aux & [0, 3, 6]).size > 2 ||
+            (aux & [1, 4, 7]).size > 2 || (aux & [2, 5, 8]).size > 2 ||
+            (aux & [0, 4, 8]).size > 2 || (aux & [2, 4, 6]).size > 2
            
             player.score = 1
             return puts "\n#{player.name} wins !!"
