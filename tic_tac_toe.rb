@@ -2,9 +2,11 @@ require "matrix"
 class Player
     @@players = 1
     attr_reader :name
+    attr_reader :score
+    attr_writer :score
     @score = 0
 
-    def initialize(name = "Player_#{@players}")
+    def initialize(name = "Player_#{@@players}")
         @name = name
         @@players += 1
     end
@@ -12,7 +14,7 @@ class Player
 end
 
 class Board
-    attr_writer :position
+    attr_reader :position
     attr_reader :rounds
     attr_reader :select_player
     
@@ -22,6 +24,7 @@ class Board
         @board = Matrix[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         @select_player = true
         @rounds = 0
+        @position = 0
 
     end
 
@@ -42,17 +45,63 @@ class Board
         print "\n"
     end
 
-    def play(position)
-        aux = @board.index(position)
-        if select_player
-            @board[aux[0], aux[1]] = "X"
-            @select_player = false
-        else
-            @board[aux[0], aux[1]] = "O"
-            @select_player = true
-        end
-        @rounds += 1
+    def play
         show_board
+        until @player_1.score == 1 || @player_2.score == 1
+            
+            if @select_player
+                puts "Player 1 chose a position:"
+                @position = gets.chomp
+    
+            else
+                puts "Player 2 chose a position:"
+                @position = gets.chomp
+            
+            end
+            aux = @board.index(@position.to_i)
+            if select_player
+                @board[aux[0], aux[1]] = "X"
+                @select_player = false
+                @rounds += 1
+                show_board
+                if @rounds > 4
+                    check("X", @player_1)
+                end
+
+            else
+                @board[aux[0], aux[1]] = "O"
+                @select_player = true
+                @rounds += 1
+                show_board
+                if @rounds > 4
+                    check("O", @player_2)
+                end
+
+            end
+            
+            
+        end
+        
+    end
+
+    def check(mark, player)
+        aux = []
+        @board.map.with_index { |x, i|
+            if x == mark
+                aux << i 
+            end
+        }
+        #possible solutions to win
+        if aux == [0, 1, 2] || aux == [3, 4, 5] ||
+            aux == [6, 7, 8] || aux == [0, 3, 6] ||
+            aux == [1, 4, 7] || aux == [2, 5, 8] ||
+            aux == [0, 4, 8] || aux == [2, 4, 6]
+           
+            player.score = 1
+            return puts "\n#{player.name} wins !!"
+        end
+
+
     end
 
 end
@@ -62,16 +111,5 @@ player_2 = Player.new
 
 game = Board.new(player_1, player_2)
 
-until game.rounds == 9
-    if game.select_player
-        puts "Player 1 chose a position:"
-        position = gets.chomp
-        game.play(position.to_i)
-    else
-        puts "Player 2 chose a position:"
-        position = gets.chomp
-        game.play(position.to_i)
-
-    end
-end
+game.play
 
